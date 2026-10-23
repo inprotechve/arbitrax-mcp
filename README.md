@@ -57,8 +57,8 @@ Add this entry to your `claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
-    "prediction-alpha": {
-      "url": "https://prediction-alpha-gateway.tu-subdominio.workers.dev/mcp",
+    "arbitrax": {
+      "url": "https://arbitrax-gateway.inprotechve.workers.dev/mcp",
       "headers": {
         "x-402-payment-proof": "{\"txHash\":\"0x...\",\"payer\":\"0xAgentWallet\",\"amount\":\"0.05\"}"
       }
