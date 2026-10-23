@@ -1,4 +1,4 @@
-# Prediction Alpha Gateway (x402 & MCP Monetization Engine)
+# ArbitraX (x402 & MCP Monetization Engine)
 
 > **High-Stakes Prediction Markets & Sports Odds Arbitrage MCP Server**  
 > Liquidated autonomously via the **HTTP 402 Payment Required (x402)** protocol on Base (USDC).
@@ -9,7 +9,7 @@
 
 Traditional websites rely on human eye-balls (Google AdSense) or credit card checkout forms (Stripe). **AI Agents cannot fill out credit card forms or resolve CAPTCHAs.**
 
-`Prediction Alpha Gateway` delivers high-frequency statistical arbitrage, +EV prediction spreads (Polymarket vs. Bookmakers), and algorithmic whale accumulation telemetry to AI agents (Claude, Cursor, AutoGPT, trading bots) via the **Model Context Protocol (MCP)**, collecting instant micropayments via **HTTP 402 & USDC**.
+`ArbitraX` delivers high-frequency statistical arbitrage, +EV prediction spreads (Polymarket vs. Bookmakers), and algorithmic whale accumulation telemetry to AI agents (Claude, Cursor, AutoGPT, trading bots) via the **Model Context Protocol (MCP)**, collecting instant micropayments via **HTTP 402 & USDC**.
 
 ### Key Advantages
 1. **Niche Fit:** Serves bots and traders who *already* hold automated liquid crypto wallets.

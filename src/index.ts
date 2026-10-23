@@ -24,7 +24,7 @@ export default {
     const defaultHeaders = {
       "Content-Type": "application/json",
       "Access-Control-Allow-Origin": "*",
-      "X-Server": "PredictionAlphaGateway/1.0.0"
+      "X-Server": "ArbitraX-Gateway/1.0.0"
     };
 
     // 1. Healthcheck
@@ -32,6 +32,7 @@ export default {
       return new Response(
         JSON.stringify({
           status: "healthy",
+          server: "ArbitraX Gateway",
           timestamp: new Date().toISOString(),
           network: env.NETWORK || "base",
           environment: env.ENVIRONMENT || "production"
@@ -58,8 +59,8 @@ export default {
         // Return tool manifest for quick inspection
         return new Response(
           JSON.stringify({
-            name: "prediction-alpha-gateway",
-            description: "High-stakes Polymarket Arbitrage & Macro Whale Signals MCP Gateway with x402 Micropayments",
+            name: "arbitrax-mcp",
+            description: "ArbitraX: High-Stakes Prediction Arbitrage (+EV) & Macro Whale Signals MCP Gateway with x402 Micropayments",
             version: "1.0.0",
             protocol: "mcp-2024-11-05",
             x402: {
@@ -217,7 +218,7 @@ function renderTerminalLanding(env: Env, tools: any[], origin: string): string {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prediction Alpha Gateway | MCP & x402 Engine</title>
+  <title>ArbitraX | Autonomous Prediction Arbitrage & x402 Gateway</title>
   <style>
     :root {
       --bg: #090a0f;
@@ -264,10 +265,13 @@ function renderTerminalLanding(env: Env, tools: any[], origin: string): string {
       box-shadow: 0 0 8px var(--accent);
     }
     h1 {
-      font-size: 2.2rem;
-      font-weight: 700;
-      letter-spacing: -0.03em;
+      font-size: 2.4rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
       margin-bottom: 0.5rem;
+    }
+    h1 span {
+      color: var(--accent);
     }
     p.lead {
       color: var(--text-muted);
@@ -355,7 +359,7 @@ function renderTerminalLanding(env: Env, tools: any[], origin: string): string {
 <body>
   <div class="header">
     <div class="pill"><span class="dot"></span> LIVE ON EDGE • BASE L2 ACTIVE</div>
-    <h1>Prediction Alpha Gateway</h1>
+    <h1>Arbitra<span>X</span></h1>
     <p class="lead">
       Autonomous MCP tool server and HTTP 402 Monetization Gateway. Delivers real-time Polymarket statistical arbitrage (+EV) and macro whale telemetry directly to AI agents.
     </p>

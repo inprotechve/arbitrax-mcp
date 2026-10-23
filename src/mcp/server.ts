@@ -88,7 +88,7 @@ export class MCPServer {
           result: {
             protocolVersion: "2024-11-05",
             serverInfo: {
-              name: "prediction-alpha-gateway",
+              name: "arbitrax-mcp",
               version: "1.0.0"
             },
             capabilities: {
