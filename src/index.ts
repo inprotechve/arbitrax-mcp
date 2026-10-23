@@ -61,8 +61,8 @@ export default {
       });
     }
 
-    // 3. MCP JSON-RPC Endpoint (/mcp)
-    if (url.pathname === "/mcp") {
+    // 3. MCP JSON-RPC Endpoint (/mcp or POST /)
+    if (url.pathname === "/mcp" || (url.pathname === "/" && request.method === "POST")) {
       if (request.method === "GET") {
         // Return tool manifest for quick inspection
         return new Response(
