@@ -24,7 +24,11 @@ export default {
     const defaultHeaders = {
       "Content-Type": "application/json",
       "Access-Control-Allow-Origin": "*",
-      "X-Server": "ArbitraX-Gateway/1.0.0"
+      "X-Server": "ArbitraX-Gateway/1.0.0",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "DENY",
+      "Referrer-Policy": "strict-origin-when-cross-origin",
+      "Permissions-Policy": "camera=(), microphone=(), geolocation=()"
     };
 
     // 1. Healthcheck
@@ -48,7 +52,11 @@ export default {
         status: 200,
         headers: {
           "Content-Type": "text/html; charset=utf-8",
-          "Access-Control-Allow-Origin": "*"
+          "Access-Control-Allow-Origin": "*",
+          "X-Content-Type-Options": "nosniff",
+          "X-Frame-Options": "DENY",
+          "Referrer-Policy": "strict-origin-when-cross-origin",
+          "Content-Security-Policy": "default-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src *;"
         }
       });
     }
