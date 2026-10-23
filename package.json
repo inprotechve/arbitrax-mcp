@@ -1,0 +1,28 @@
+{
+  "name": "prediction-alpha-gateway",
+  "version": "1.0.0",
+  "description": "Edge-native MCP Server & x402 Monetization Gateway for Polymarket Arbitrage & High-Stakes Predictions",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test:agent": "npx tsx scripts/simulate-agent.ts"
+  },
+  "keywords": [
+    "mcp",
+    "x402",
+    "polymarket",
+    "ai-agents",
+    "cloudflare-workers",
+    "arbitrage",
+    "prediction-markets"
+  ],
+  "author": "Antigravity Engineering",
+  "license": "MIT",
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241022.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "wrangler": "^3.83.0"
+  }
+}
