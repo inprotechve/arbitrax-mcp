@@ -2,7 +2,7 @@
 import readline from "node:readline";
 
 const GATEWAY_URL = process.env.ARBITRAX_URL || "https://arbitrax-gateway.inprotechve.workers.dev/mcp";
-const PAYMENT_PROOF = process.env.X_402_PAYMENT_PROOF || "";
+const PAYMENT_PROOF = process.env["x-402-payment-proof"] || process.env.X_402_PAYMENT_PROOF || process.env.PAYMENT_PROOF || "";
 
 const rl = readline.createInterface({
   input: process.stdin,
