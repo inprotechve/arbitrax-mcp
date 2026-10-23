@@ -26,14 +26,21 @@ rl.on("line", async (line) => {
       body: trimmed
     });
 
-    const result = await response.text();
-    console.log(result);
+    const rawText = await response.text();
+
+    // CRITICAL: MCP Stdio protocol (and mcp-proxy) strictly requires single-line JSON followed by \n
+    try {
+      const data = JSON.parse(rawText);
+      process.stdout.write(JSON.stringify(data) + "\n");
+    } catch {
+      process.stdout.write(rawText.replace(/\r?\n/g, "") + "\n");
+    }
   } catch (err) {
-    console.log(
+    process.stdout.write(
       JSON.stringify({
         jsonrpc: "2.0",
         error: { code: -32603, message: `ArbitraX Bridge Error: ${err.message}` }
-      })
+      }) + "\n"
     );
   }
 });
