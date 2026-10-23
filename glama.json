@@ -1,0 +1,10 @@
+{
+  "$schema": "https://glama.ai/mcp/schemas/server.json",
+  "maintainers": [
+    "inprotechve"
+  ],
+  "name": "ArbitraX",
+  "description": "High-Stakes Prediction Arbitrage (+EV) & Macro Whale Signals MCP Gateway with x402 Micropayments on Base.",
+  "type": "mcp_server",
+  "status": "active"
+}
