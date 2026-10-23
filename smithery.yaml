@@ -1,0 +1,16 @@
+startCommand:
+  type: stdio
+configSchema:
+  type: object
+  properties:
+    paymentProof:
+      type: string
+      description: "Optional: x402 payment proof transaction hash on Base L2 network."
+commandFunction: |-
+  (config) => ({
+    command: 'node',
+    args: ['bin/cli.js'],
+    env: {
+      X_402_PAYMENT_PROOF: config.paymentProof || ''
+    }
+  })

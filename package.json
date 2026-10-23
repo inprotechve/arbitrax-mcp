@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "Edge-native MCP Server & x402 Monetization Gateway for Polymarket Arbitrage & High-Stakes Predictions",
   "main": "src/index.ts",
+  "type": "module",
+  "bin": {
+    "arbitrax": "./bin/cli.js"
+  },
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
