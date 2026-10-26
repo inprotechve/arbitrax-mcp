@@ -18,13 +18,21 @@ Traditional websites rely on human eye-balls (Google AdSense) or credit card che
 
 ---
 
-## 🛠️ MCP Tool Catalog & Pricing
+## 🛠️ MCP Tool Catalog & Freemium Funnel
 
-| Tool Name | Purpose | Price (USDC) | Target Consumer |
+ArbitraX implements a **Dual-Funnel Freemium Strategy** (M2M + H2M) designed to maximize adoption with zero onboarding friction:
+
+| Tool Name | Purpose | Tier / Pricing | Target Consumer |
 | :--- | :--- | :---: | :--- |
-| `get_prediction_arbitrage` | Scans Polymarket and calculates +EV statistical discrepancies against consensus benchmarks. | **$0.05** | Arbitrage bots, election & event prediction models |
-| `search_prediction_events` | Searches active prediction markets with live outcome pricing and liquidity volume. | **$0.02** | Research agents, news summarizers, market scanners |
-| `get_whale_macro_signals` | High-volume OTC and on-chain whale accumulation alerts for Crypto, Gold, and Oil. | **$0.10** | Macro momentum bots, algorithmic hedge funds |
+| `search_prediction_events` | Searches active prediction markets with live outcome pricing and liquidity volume. | **FREE ($0.00)**<br/>*(Lead Magnet)* | Research agents, LLM searchers, news summarizers |
+| `get_prediction_arbitrage` | Scans Polymarket and calculates +EV statistical discrepancies against consensus models. | **Freemium Preview**<br/>(1 Free Sample / **$0.05** Full Scan) | Arbitrage bots, election & event prediction models |
+| `get_whale_macro_signals` | High-volume OTC and on-chain whale accumulation alerts for Crypto, Gold, and Oil. | **$0.10 USDC**<br/>*(VIP Signals)* | Macro momentum bots, algorithmic hedge funds |
+
+### ⚡ Freemium Teaser & Lead Magnet Architecture
+1. **Free Discovery & Lead Magnet:** `search_prediction_events` is 100% free with zero payment required, letting agents index markets instantly.
+2. **Freemium Arbitrage Preview:** Calling `get_prediction_arbitrage` without payment proof returns **1 real live high-conviction +EV opportunity for free**, accompanied by a locked orderbook count (e.g. 22 additional spreads available) and clear x402 payment instructions.
+3. **Interactive Web Scanner Demo:** Anyone can test real-time arbitrage detection directly on the landing page (`/v1/demo`) with a single click.
+4. **Pro Deep-Orderbook Unlock:** Providing a valid 0.05 USDC payment proof unlocks all 20+ live spreads, Kelly sizing parameters, and cross-market execution routes.
 
 ---
 

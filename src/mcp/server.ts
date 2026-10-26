@@ -21,7 +21,7 @@ export class MCPServer {
       {
         name: "get_prediction_arbitrage",
         description:
-          "Scans live Polymarket prediction markets (politics, elections, sports, crypto) and calculates +EV statistical discrepancies and arbitrage spreads against consensus models.",
+          "Scans live Polymarket prediction markets and calculates +EV statistical discrepancies against consensus models. Returns 1 free sample +EV opportunity; unlock full deep-orderbook scan upon payment ($0.05 USDC).",
         priceUSDC: parseFloat(this.env.DEFAULT_ARBITRAGE_PRICE_USDC || "0.05"),
         inputSchema: {
           type: "object",
@@ -44,8 +44,8 @@ export class MCPServer {
       {
         name: "search_prediction_events",
         description:
-          "Searches active prediction markets on Polymarket with live probability outcome pricing and liquidity volume.",
-        priceUSDC: 0.02,
+          "Searches active prediction markets on Polymarket with live probability outcome pricing and liquidity volume. [100% FREE Lead Magnet]",
+        priceUSDC: 0.00,
         inputSchema: {
           type: "object",
           properties: {
@@ -77,7 +77,7 @@ export class MCPServer {
   /**
    * Dispatches and handles standard MCP JSON-RPC 2.0 requests.
    */
-  public async handleMCPRequest(request: MCPRequest): Promise<MCPResponse> {
+  public async handleMCPRequest(request: MCPRequest, isPaid: boolean = false): Promise<MCPResponse> {
     const { id, method, params } = request;
 
     switch (method) {
@@ -104,7 +104,9 @@ export class MCPServer {
           result: {
             tools: this.getToolDefinitions().map((t) => ({
               name: t.name,
-              description: `${t.description} [Price: $${t.priceUSDC} USDC]`,
+              description: t.priceUSDC === 0
+                ? `${t.description} [Price: FREE]`
+                : `${t.description} [Price: $${t.priceUSDC} USDC]`,
               inputSchema: t.inputSchema
             }))
           }
@@ -114,7 +116,7 @@ export class MCPServer {
         const toolName = params?.name;
         const toolArguments = params?.arguments || {};
 
-        const executionResult = await this.executeTool(toolName, toolArguments);
+        const executionResult = await this.executeTool(toolName, toolArguments, isPaid);
 
         return {
           jsonrpc: "2.0",
@@ -145,7 +147,11 @@ export class MCPServer {
   /**
    * Executes underlying alpha analytics tools.
    */
-  public async executeTool(toolName: string, args: Record<string, any>): Promise<any> {
+  public async executeTool(
+    toolName: string,
+    args: Record<string, any>,
+    isPaid: boolean = false
+  ): Promise<any> {
     if (toolName === "get_prediction_arbitrage") {
       const limit = Math.min(Math.max(Number(args.limit) || 10, 1), 25);
       const minEdge = (Number(args.minEdgePercentage) || 3.0) / 100;
@@ -154,8 +160,35 @@ export class MCPServer {
       const events = await this.polymarket.getActiveEvents(limit, category);
       const arbitrageDeals = this.arbitrage.calculateArbitrageOpportunities(events, minEdge);
 
+      // Freemium preview mode if unpaid
+      if (!isPaid) {
+        const freeOpportunity = arbitrageDeals.length > 0 ? [arbitrageDeals[0]] : [];
+        const lockedCount = Math.max(0, arbitrageDeals.length - 1);
+
+        return {
+          success: true,
+          tier: "FREEMIUM_PREVIEW",
+          summary: `Scanned ${events.length} active Polymarket events. Displaying 1 FREE high-conviction +EV opportunity. ${lockedCount} additional alpha opportunities locked in deep orderbook.`,
+          opportunities: freeOpportunity,
+          freemiumTeaser: {
+            lockedOpportunitiesCount: lockedCount,
+            deepOrderbookLocked: true,
+            status: "LOCKED_VIP_ACCESS",
+            benefit: "Full tier unlocks all real-time orderbook spreads, Kelly sizing, cross-market hedges, and direct bookmaker arbitrage."
+          },
+          x402Unlock: {
+            priceUSDC: parseFloat(this.env.DEFAULT_ARBITRAGE_PRICE_USDC || "0.05"),
+            network: this.env.NETWORK || "base",
+            recipient: this.env.TREASURY_WALLET_BASE,
+            instruction: "Include 'x-402-payment-proof' header with valid Base USDC transaction to unlock full deep orderbook."
+          },
+          timestamp: new Date().toISOString()
+        };
+      }
+
       return {
         success: true,
+        tier: "PRO_UNLOCKED",
         summary: `Scanned ${events.length} active Polymarket events. Found ${arbitrageDeals.length} arbitrage / +EV opportunities exceeding ${(minEdge * 100).toFixed(1)}% discrepancy.`,
         opportunities: arbitrageDeals,
         timestamp: new Date().toISOString()

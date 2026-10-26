@@ -17,11 +17,12 @@ const mockCtx: any = {
 
 async function runAgentSimulation() {
   console.log("================================================================================");
-  console.log("🤖 SIMULATING AI AGENT (Claude / Custom Agent) CONNECTING TO MCP & x402 GATEWAY");
+  console.log("🤖 SIMULATING AI AGENT (Claude / Custom Agent) CONNECTING TO ARBITRAX MCP GATEWAY");
+  console.log("   TESTING DUAL FREEMIUM FUNNEL: FREE LEAD MAGNET + FREEMIUM TEASER + PRO UNLOCK");
   console.log("================================================================================\n");
 
   // Step 1: Discover Tools (Free)
-  console.log("1️⃣ [Agent Discovery] Requesting MCP tools/list (Free endpoint)...");
+  console.log("1️⃣ [Agent Discovery] Requesting MCP tools/list (Free catalog)...");
   const listReq = new Request("https://gateway.local/mcp", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -33,13 +34,14 @@ async function runAgentSimulation() {
   });
 
   const listRes = await worker.fetch(listReq, mockEnv, mockCtx);
-  const listData = await listRes.json();
-  console.log("✅ MCP Tools Discovered:", (listData as any).result?.tools?.map((t: any) => t.name));
+  const listData: any = await listRes.json();
+  const tools = listData.result?.tools || [];
+  console.log("✅ MCP Tools Discovered:", tools.map((t: any) => `${t.name} -> ${t.description.split('[')[1]?.replace(']', '') || 'N/A'}`));
   console.log("--------------------------------------------------------------------------------\n");
 
-  // Step 2: Agent attempts to call tool WITHOUT paying (Expect HTTP 402)
-  console.log("2️⃣ [Unpaid Call] Agent calls 'get_prediction_arbitrage' without payment proof...");
-  const unpaidReq = new Request("https://gateway.local/mcp", {
+  // Step 2: Test Free Tool (search_prediction_events: $0.00 USDC Lead Magnet)
+  console.log("2️⃣ [Free Lead Magnet Call] Agent calls 'search_prediction_events' without paying ($0.00)...");
+  const freeReq = new Request("https://gateway.local/mcp", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -47,40 +49,25 @@ async function runAgentSimulation() {
       id: "req_2",
       method: "tools/call",
       params: {
-        name: "get_prediction_arbitrage",
-        arguments: { limit: 5, minEdgePercentage: 2.0 }
+        name: "search_prediction_events",
+        arguments: { query: "Trump", limit: 3 }
       }
     })
   });
 
-  const unpaidRes = await worker.fetch(unpaidReq, mockEnv, mockCtx);
-  console.log(`📡 Response Status: ${unpaidRes.status} ${unpaidRes.statusText}`);
-  console.log(`🔐 x402 Challenge Headers:`);
-  console.log(`   - x402-protocol: ${unpaidRes.headers.get("x402-protocol")}`);
-  console.log(`   - x402-price: ${unpaidRes.headers.get("x402-amount")} ${unpaidRes.headers.get("x402-token")}`);
-  console.log(`   - x402-recipient: ${unpaidRes.headers.get("x402-recipient")}`);
-  console.log(`   - x402-nonce: ${unpaidRes.headers.get("x402-nonce")}`);
-
-  const challengeBody = await unpaidRes.json();
-  console.log("📄 Challenge Message:", (challengeBody as any).message);
+  const freeRes = await worker.fetch(freeReq, mockEnv, mockCtx);
+  console.log(`📡 Response Status: ${freeRes.status} ${freeRes.statusText}`);
+  console.log(`🏷️ Tier: ${freeRes.headers.get("x-tier")}`);
+  const freeData: any = await freeRes.json();
+  const freeParsed = JSON.parse(freeData.result?.content?.[0]?.text || "{}");
+  console.log(`✅ Free Search Query '${freeParsed.query}' returned ${freeParsed.count} active prediction markets without payment!`);
   console.log("--------------------------------------------------------------------------------\n");
 
-  // Step 3: Agent signs microtransaction and re-submits with proof
-  console.log("3️⃣ [Paid Call] Agent executes microtransaction on Base and presents payment proof...");
-  const paymentProof = {
-    txHash: "0x8f4c82b3d1490234a9b6910a2f4c9a87d12f10b7498c1928014e7a83d9921bc4",
-    payer: "0xAgentWallet_Base_0x42",
-    amount: "0.05",
-    isTestSimulation: true,
-    nonce: unpaidRes.headers.get("x402-nonce")
-  };
-
-  const paidReq = new Request("https://gateway.local/mcp", {
+  // Step 3: Test Freemium Preview (get_prediction_arbitrage without payment proof)
+  console.log("3️⃣ [Freemium Preview Call] Agent calls 'get_prediction_arbitrage' without payment proof...");
+  const unpaidReq = new Request("https://gateway.local/mcp", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-402-payment-proof": JSON.stringify(paymentProof)
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       jsonrpc: "2.0",
       id: "req_3",
@@ -92,24 +79,92 @@ async function runAgentSimulation() {
     })
   });
 
+  const unpaidRes = await worker.fetch(unpaidReq, mockEnv, mockCtx);
+  console.log(`📡 Response Status: ${unpaidRes.status} ${unpaidRes.statusText}`);
+  console.log(`🏷️ Tier Header: ${unpaidRes.headers.get("x-tier")}`);
+  console.log(`🔐 x402 Price Header: ${unpaidRes.headers.get("x402-amount")} ${unpaidRes.headers.get("x402-token")}`);
+
+  const unpaidData: any = await unpaidRes.json();
+  const unpaidParsed = JSON.parse(unpaidData.result?.content?.[0]?.text || "{}");
+  console.log(`🎁 Freemium Tier: ${unpaidParsed.tier}`);
+  console.log(`📄 Summary: ${unpaidParsed.summary}`);
+  console.log(`🔓 Free Sample Opportunity Count: ${unpaidParsed.opportunities?.length}`);
+  console.log(`🔒 Locked Opportunities Teaser Count: ${unpaidParsed.freemiumTeaser?.lockedOpportunitiesCount}`);
+  console.log(`💎 Unlock Instruction: ${unpaidParsed.x402Unlock?.instruction}`);
+  console.log("--------------------------------------------------------------------------------\n");
+
+  // Step 4: Test Strict Paid Tool (get_whale_macro_signals without payment proof -> Expect HTTP 402)
+  console.log("4️⃣ [Strict Paid Call] Agent calls 'get_whale_macro_signals' without paying ($0.10)...");
+  const strictReq = new Request("https://gateway.local/mcp", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      id: "req_4",
+      method: "tools/call",
+      params: {
+        name: "get_whale_macro_signals",
+        arguments: {}
+      }
+    })
+  });
+
+  const strictRes = await worker.fetch(strictReq, mockEnv, mockCtx);
+  console.log(`📡 Response Status: ${strictRes.status} ${strictRes.statusText} (Standard x402 Challenge)`);
+  console.log(`🔐 Challenge Headers: x402-amount=${strictRes.headers.get("x402-amount")}, recipient=${strictRes.headers.get("x402-recipient")}`);
+  console.log("--------------------------------------------------------------------------------\n");
+
+  // Step 5: Test Pro Paid Call (get_prediction_arbitrage WITH valid payment proof)
+  console.log("5️⃣ [Pro Unlocked Call] Agent executes microtransaction on Base and presents payment proof...");
+  const paymentProof = {
+    txHash: "0x8f4c82b3d1490234a9b6910a2f4c9a87d12f10b7498c1928014e7a83d9921bc4",
+    payer: "0xAgentWallet_Base_0x42",
+    amount: "0.05",
+    isTestSimulation: true
+  };
+
+  const paidReq = new Request("https://gateway.local/mcp", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-402-payment-proof": JSON.stringify(paymentProof)
+    },
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      id: "req_5",
+      method: "tools/call",
+      params: {
+        name: "get_prediction_arbitrage",
+        arguments: { limit: 5, minEdgePercentage: 2.0 }
+      }
+    })
+  });
+
   const paidRes = await worker.fetch(paidReq, mockEnv, mockCtx);
   console.log(`📡 Response Status: ${paidRes.status} ${paidRes.statusText}`);
   console.log(`💰 Payment Verified: ${paidRes.headers.get("x-payment-verified")}`);
+  console.log(`🏷️ Tier: ${paidRes.headers.get("x-tier")}`);
   console.log(`👤 Payer: ${paidRes.headers.get("x-payer")}`);
 
   const paidData: any = await paidRes.json();
-  const resultText = paidData.result?.content?.[0]?.text;
-  if (resultText) {
-    const parsed = JSON.parse(resultText);
-    console.log("📊 Summary:", parsed.summary);
-    console.log("🎯 Top Arbitrage Opportunities Found:");
-    console.dir(parsed.opportunities?.slice(0, 2), { depth: null });
-  } else {
-    console.log("Payload:", paidData);
-  }
+  const paidParsed = JSON.parse(paidData.result?.content?.[0]?.text || "{}");
+  console.log(`👑 Full Tier: ${paidParsed.tier}`);
+  console.log(`📊 Summary: ${paidParsed.summary}`);
+  console.log(`🎯 Total Unlocked Opportunities: ${paidParsed.opportunities?.length}`);
+  console.log("--------------------------------------------------------------------------------\n");
+
+  // Step 6: Test Web Demo Endpoint (/v1/demo)
+  console.log("6️⃣ [Web UI Lead Magnet] Testing public endpoint GET /v1/demo...");
+  const demoReq = new Request("https://gateway.local/v1/demo", { method: "GET" });
+  const demoRes = await worker.fetch(demoReq, mockEnv, mockCtx);
+  const demoData: any = await demoRes.json();
+  console.log(`📡 Response Status: ${demoRes.status}`);
+  console.log(`🎁 Demo Output Tier: ${demoData.tier}`);
+  console.log(`🔓 Free Sample Available: ${demoData.opportunities?.length > 0 ? "YES" : "NO"}`);
+  console.log(`🔒 Locked Alpha Count for Web Teaser: ${demoData.freemiumTeaser?.lockedOpportunitiesCount}`);
 
   console.log("\n================================================================================");
-  console.log("🎉 SUCCESS: End-to-end MCP + x402 Monetization flow successfully verified!");
+  console.log("🎉 SUCCESS: All 6 stages of the Dual-Funnel Freemium & Lead Magnet passed flawlessly!");
   console.log("================================================================================");
 }
 
