@@ -1,94 +1,103 @@
-# ArbitraX (x402 & MCP Monetization Engine)
+# ArbitraX MCP Client
 
-> **High-Stakes Prediction Markets & Sports Odds Arbitrage MCP Server**  
-> Liquidated autonomously via the **HTTP 402 Payment Required (x402)** protocol on Base (USDC).
+[![Glama Discovery](https://glama.ai/mcp/servers/inprotechve/arbitrax-mcp/badge)](https://glama.ai/mcp/servers/inprotechve/arbitrax-mcp)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
----
+Model Context Protocol (MCP) client bridge for **ArbitraX**: real-time order-book analysis and set arbitrage across mutually-exclusive (neg-risk) Polymarket prediction markets for AI agents.
 
-## 🚀 Business Overview & Value Proposition
-
-Traditional websites rely on human eye-balls (Google AdSense) or credit card checkout forms (Stripe). **AI Agents cannot fill out credit card forms or resolve CAPTCHAs.**
-
-`ArbitraX` delivers high-frequency statistical arbitrage, +EV prediction spreads (Polymarket vs. Bookmakers), and algorithmic whale accumulation telemetry to AI agents (Claude, Cursor, AutoGPT, trading bots) via the **Model Context Protocol (MCP)**, collecting instant micropayments via **HTTP 402 & USDC**.
-
-### Key Advantages
-1. **Niche Fit:** Serves bots and traders who *already* hold automated liquid crypto wallets.
-2. **High-Value Alpha:** Does not sell generic public prices; delivers real-time statistical edges (+EV arbitrage spreads) where agents can capitalize instantly.
-3. **Frictionless M2M Commerce:** Zero account creation, zero KYC friction for autonomous agents. Transactions settle in milliseconds on the Base L2 network.
+Connects autonomous AI agents (Claude Desktop, Cursor, AutoGen, custom LLM frameworks) to live prediction order books and liquidity depth via standard MCP stdio or HTTP 402 edge streams.
 
 ---
 
-## 🛠️ MCP Tool Catalog & Freemium Funnel
+## 🛠️ Available MCP Tools
 
-ArbitraX implements a **Dual-Funnel Freemium Strategy** (M2M + H2M) designed to maximize adoption with zero onboarding friction:
+### 1. `search_prediction_events`
+* **Price:** **FREE ($0.00)**
+* **Description:** Searches active Polymarket prediction events by keyword with live probability pricing, volume, and liquidity.
+* **Input Schema:**
+  * `query` (string, required): Search keyword (e.g., `'Fed'`, `'Bitcoin'`, `'election'`).
+  * `limit` (number, optional, 1-10, default 5): Maximum number of events to return.
 
-| Tool Name | Purpose | Tier / Pricing | Target Consumer |
-| :--- | :--- | :---: | :--- |
-| `search_prediction_events` | Searches active prediction markets with live outcome pricing and liquidity volume. | **FREE ($0.00)**<br/>*(Lead Magnet)* | Research agents, LLM searchers, news summarizers |
-| `get_prediction_arbitrage` | Scans Polymarket and calculates +EV statistical discrepancies against consensus models. | **Freemium Preview**<br/>(1 Free Sample / **$0.05** Full Scan) | Arbitrage bots, election & event prediction models |
-| `get_whale_macro_signals` | High-volume OTC and on-chain whale accumulation alerts for Crypto, Gold, and Oil. | **$0.10 USDC**<br/>*(VIP Signals)* | Macro momentum bots, algorithmic hedge funds |
-
-### ⚡ Freemium Teaser & Lead Magnet Architecture
-1. **Free Discovery & Lead Magnet:** `search_prediction_events` is 100% free with zero payment required, letting agents index markets instantly.
-2. **Freemium Arbitrage Preview:** Calling `get_prediction_arbitrage` without payment proof returns **1 real live high-conviction +EV opportunity for free**, accompanied by a locked orderbook count (e.g. 22 additional spreads available) and clear x402 payment instructions.
-3. **Interactive Web Scanner Demo:** Anyone can test real-time arbitrage detection directly on the landing page (`/v1/demo`) with a single click.
-4. **Pro Deep-Orderbook Unlock:** Providing a valid 0.05 USDC payment proof unlocks all 20+ live spreads, Kelly sizing parameters, and cross-market execution routes.
+### 2. `get_prediction_arbitrage`
+* **Price:** **Free Preview / 0.05 USDC Full Tier (Base L2)**
+* **Description:** Scans live mutually-exclusive (neg-risk) Polymarket events for riskless set arbitrage: whether buying one share of every outcome costs less than the \$1 payout, net of estimated taker fees, using live CLOB order books.
+* **Tiers:**
+  * `tier="preview"` (default, **FREE**): Returns real-time scan statistics, eligible event counts, and headline metrics for the event closest to parity.
+  * `tier="full"` (**0.05 USDC**): Returns complete order-book analysis across all eligible events with per-outcome best bid/ask, depth, both directions, and annualized yield. Payment is verified on-chain on Base L2 via the HTTP 402 protocol.
+* **Input Schema:**
+  * `limit` (number, optional, 1-10, default 5): Number of candidate events to analyze.
+  * `tier` (string, optional, `'preview'` | `'full'`, default `'preview'`).
 
 ---
 
-## ⚙️ Architecture & Sequence
+## 🚀 Installation & Quick Start
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Agent as Autonomous AI Agent (Claude / Cursor)
-    participant Worker as Cloudflare Worker Edge (x402 Gateway)
-    participant Gamma as Polymarket Gamma API (Real-time Feeds)
-    participant Base as Base L2 (USDC Micropayments)
+### Option A: Run via NPX (Recommended for Claude Desktop & Cursor)
 
-    Agent->>Worker: POST /mcp (method: tools/call, name: get_prediction_arbitrage)
-    Note over Worker: Check header x-402-payment-proof
-    Worker-->>Agent: HTTP 402 Payment Required<br/>x402-price: 0.05 USDC | x402-recipient: 0xTreasury...
-    Agent->>Base: Execute & sign 0.05 USDC microtransaction
-    Agent->>Worker: POST /mcp + Header: x-402-payment-proof (txHash)
-    Worker->>Gamma: Fetch active prediction order books
-    Worker->>Worker: Compute discrepancy & +EV delta
-    Worker-->>Agent: HTTP 200 OK + JSON Arbitrage Payload
+No installation required. Run directly with `npx`:
+
+```bash
+npx -y github:inprotechve/arbitrax-mcp
+```
+
+### Option B: Docker Container
+
+```bash
+docker run -i --rm ghcr.io/inprotechve/arbitrax-mcp:latest
 ```
 
 ---
 
-## 💻 Claude Desktop & Cursor Integration
+## ⚙️ Client Configuration
 
-Add this entry to your `claude_desktop_config.json`:
+### Claude Desktop (`claude_desktop_config.json`)
+
+Add ArbitraX to your `claude_desktop_config.json`:
 
 ```json
 {
   "mcpServers": {
     "arbitrax": {
-      "url": "https://arbitrax-gateway.inprotechve.workers.dev/mcp",
-      "headers": {
-        "x-402-payment-proof": "{\"txHash\":\"0x...\",\"payer\":\"0xAgentWallet\",\"amount\":\"0.05\"}"
+      "command": "npx",
+      "args": ["-y", "github:inprotechve/arbitrax-mcp"],
+      "env": {
+        "X_402_PAYMENT_PROOF": "{OPTIONAL_BASE_USDC_TX_HASH_FOR_FULL_TIER}"
       }
     }
   }
 }
 ```
 
+### Cursor IDE Configuration
+
+In your Cursor MCP settings:
+- **Type:** `command`
+- **Command:** `npx -y github:inprotechve/arbitrax-mcp`
+
+### Direct HTTP Integration (Web / Custom Agents)
+
+If your agent framework supports remote HTTP MCP endpoints, connect directly to the edge gateway:
+
+* **Endpoint:** `https://arbitrax-gateway.inprotechve.workers.dev/mcp`
+* **Transport:** Streamable HTTP POST / JSON-RPC 2.0
+* **Payment Header:** `x-402-payment-proof: <BASE_USDC_TRANSACTION_HASH>`
+
 ---
 
-## 🧪 Local Testing & Simulation
+## 🔒 Security & Verifiable Transparency
 
-Execute the end-to-end agent simulation test:
-
-```bash
-npm run test:agent
-```
+* **Client Wrapper:** This repository contains strictly the open-source client transport adapter.
+* **Zero Front-Running:** Core order-book processing and settlement risk heuristics run in isolated edge workers behind atomic single-use on-chain verification.
+* **Base Network Native:** Payments settle directly in native USDC on Base L2 (`0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`).
 
 ---
 
-## 🛡️ Project Isolation & Governance
+## ⚠️ Disclaimer
 
-This project adheres to the **Workspace Isolation Protocol (`protocolo-aislamiento-proyectos.md`)**:
-- Completely decoupled from corporate CRM, gremial portals, and other local apps.
-- Standalone dependencies, independent wrangler configuration, and zero cross-contamination.
+Informational data derived from public Polymarket APIs at query time. Not financial or investment advice. Market prices fluctuate within milliseconds; fees are estimated based on published fee schedules. Execution slippage beyond top-of-book, gas costs, capital lock-up, and contract resolution/dispute risks are not included.
+
+---
+
+## 📄 License
+
+MIT License © 2026 Inprotech.

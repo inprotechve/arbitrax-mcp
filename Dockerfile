@@ -3,7 +3,7 @@ FROM node:20-alpine
 WORKDIR /app
 
 COPY package*.json ./
-COPY . .
+COPY bin ./bin
 
 RUN chmod +x bin/cli.js
 

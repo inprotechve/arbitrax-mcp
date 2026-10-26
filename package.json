@@ -1,33 +1,32 @@
 {
-  "name": "prediction-alpha-gateway",
-  "version": "1.0.0",
-  "description": "Edge-native MCP Server & x402 Monetization Gateway for Polymarket Arbitrage & High-Stakes Predictions",
-  "main": "src/index.ts",
+  "name": "arbitrax-mcp",
+  "version": "2.0.0",
+  "description": "Model Context Protocol (MCP) client bridge for ArbitraX: live Polymarket prediction order-book analysis and set arbitrage for AI agents.",
+  "main": "bin/cli.js",
   "type": "module",
   "bin": {
-    "arbitrax": "./bin/cli.js"
+    "arbitrax": "./bin/cli.js",
+    "arbitrax-mcp": "./bin/cli.js"
   },
   "scripts": {
-    "build": "echo ArbitraX Ready",
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
-    "test:agent": "npx tsx scripts/simulate-agent.ts"
+    "start": "node bin/cli.js"
   },
   "keywords": [
     "mcp",
-    "x402",
+    "model-context-protocol",
     "polymarket",
     "ai-agents",
-    "cloudflare-workers",
+    "prediction-markets",
     "arbitrage",
-    "prediction-markets"
+    "x402"
   ],
-  "author": "Antigravity Engineering",
+  "author": "Inprotech",
   "license": "MIT",
-  "devDependencies": {
-    "@cloudflare/workers-types": "^4.20241022.0",
-    "tsx": "^4.19.2",
-    "typescript": "^5.6.3",
-    "wrangler": "^3.83.0"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/inprotechve/arbitrax-mcp.git"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

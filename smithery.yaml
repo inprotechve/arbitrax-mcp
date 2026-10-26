@@ -5,7 +5,7 @@ configSchema:
   properties:
     paymentProof:
       type: string
-      description: "Optional: x402 payment proof transaction hash on Base L2 network."
+      description: "Optional: Base L2 USDC transaction hash to unlock full-tier arbitrage analysis."
 commandFunction: |-
   (config) => ({
     command: 'node',

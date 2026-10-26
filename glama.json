@@ -4,7 +4,7 @@
     "inprotechve"
   ],
   "name": "ArbitraX",
-  "description": "High-Stakes Prediction Arbitrage (+EV) & Macro Whale Signals MCP Gateway with x402 Micropayments on Base.",
+  "description": "ArbitraX MCP Client: Real-time Polymarket order-book analysis and set arbitrage for AI agents via HTTP 402 / Base USDC micropayments.",
   "type": "mcp_server",
   "status": "active"
 }
