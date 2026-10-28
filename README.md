@@ -9,6 +9,20 @@ Connects autonomous AI agents (Claude Desktop, Cursor, AutoGen, custom LLM frame
 
 ---
 
+## 💳 Flexible Access Models
+
+ArbitraX offers two seamless ways to access the **FULL Tier** (deep order-book analytics and alpha insights):
+
+1. **API Key / Time Pass (Zero Fricción - Recomendado para Claude & Cursor):**
+   * **24h Day Pass (1.00 USDC)**: Escaneos ilimitados por 24 horas.
+   * **100 Credits Pack (3.00 USDC)**: 100 escaneos completos sin caducidad.
+   * **30-Day Pro Pass (15.00 USDC)**: Escaneos ilimitados durante 30 días.
+   * Configuras una sola vez tu `ARBITRAX_API_KEY` en tu cliente MCP y consultas sin firmar transacciones en cada prompt.
+2. **x402 Pay-per-call (0.05 USDC en Base L2):**
+   * Diseñado para agentes autónomos M2M (Machine-to-Machine) con billetera automatizada.
+
+---
+
 ## 🛠️ Available MCP Tools
 
 ### 1. `search_prediction_events`
@@ -19,11 +33,11 @@ Connects autonomous AI agents (Claude Desktop, Cursor, AutoGen, custom LLM frame
   * `limit` (number, optional, 1-10, default 5): Maximum number of events to return.
 
 ### 2. `get_prediction_arbitrage`
-* **Price:** **Free Preview / 0.05 USDC Full Tier (Base L2)**
-* **Description:** Scans live mutually-exclusive (neg-risk) Polymarket events for riskless set arbitrage: whether buying one share of every outcome costs less than the \$1 payout, net of estimated taker fees, using live CLOB order books.
+* **Price:** **Free Preview / Full Tier (API Key o 0.05 USDC)**
+* **Description:** Scans live mutually-exclusive (neg-risk) Polymarket events for riskless set arbitrage and statistical mispricing: whether buying one share of every outcome costs less than the \$1 payout, net of estimated taker fees, using live CLOB order books.
 * **Tiers:**
   * `tier="preview"` (default, **FREE**): Returns real-time scan statistics, eligible event counts, and headline metrics for the event closest to parity.
-  * `tier="full"` (**0.05 USDC**): Returns complete order-book analysis across all eligible events with per-outcome best bid/ask, depth, both directions, and annualized yield. Payment is verified on-chain on Base L2 via the HTTP 402 protocol.
+  * `tier="full"`: Returns complete order-book analysis across all eligible events with per-outcome best bid/ask, depth, both directions, alpha insights (top mispricings, spread analysis) and annualized yield.
 * **Input Schema:**
   * `limit` (number, optional, 1-10, default 5): Number of candidate events to analyze.
   * `tier` (string, optional, `'preview'` | `'full'`, default `'preview'`).
@@ -32,27 +46,9 @@ Connects autonomous AI agents (Claude Desktop, Cursor, AutoGen, custom LLM frame
 
 ## 🚀 Installation & Quick Start
 
-### Option A: Run via NPX (Recommended for Claude Desktop & Cursor)
-
-No installation required. Run directly with `npx`:
-
-```bash
-npx -y github:inprotechve/arbitrax-mcp
-```
-
-### Option B: Docker Container
-
-```bash
-docker run -i --rm ghcr.io/inprotechve/arbitrax-mcp:latest
-```
-
----
-
-## ⚙️ Client Configuration
-
 ### Claude Desktop (`claude_desktop_config.json`)
 
-Add ArbitraX to your `claude_desktop_config.json`:
+Configure ArbitraX with your API Key for unlimited seamless access:
 
 ```json
 {
@@ -61,18 +57,21 @@ Add ArbitraX to your `claude_desktop_config.json`:
       "command": "npx",
       "args": ["-y", "github:inprotechve/arbitrax-mcp"],
       "env": {
-        "X_402_PAYMENT_PROOF": "{OPTIONAL_BASE_USDC_TX_HASH_FOR_FULL_TIER}"
+        "ARBITRAX_API_KEY": "ak_live_your_key_here"
       }
     }
   }
 }
 ```
 
+*(Si utilizas pago unitario M2M en vez de API Key, puedes especificar `"PAYMENT_PROOF": "0x..."`).*
+
 ### Cursor IDE Configuration
 
-In your Cursor MCP settings:
+In your Cursor MCP settings (`Settings` -> `Features` -> `MCP`):
 - **Type:** `command`
 - **Command:** `npx -y github:inprotechve/arbitrax-mcp`
+- **Env:** `ARBITRAX_API_KEY=ak_live_your_key_here`
 
 ### Direct HTTP Integration (Web / Custom Agents)
 
@@ -80,7 +79,7 @@ If your agent framework supports remote HTTP MCP endpoints, connect directly to 
 
 * **Endpoint:** `https://arbitrax-gateway.inprotechve.workers.dev/mcp`
 * **Transport:** Streamable HTTP POST / JSON-RPC 2.0
-* **Payment Header:** `x-402-payment-proof: <BASE_USDC_TRANSACTION_HASH>`
+* **Headers:** `Authorization: Bearer <ARBITRAX_API_KEY>` or `x-402-payment-proof: <BASE_USDC_TX_HASH>`
 
 ---
 
